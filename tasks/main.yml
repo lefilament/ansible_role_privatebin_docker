@@ -1,0 +1,12 @@
+---
+
+## Install privatebin docker
+- name: Install privatebin docker
+  template:
+    src: privatebin.yaml.j2
+    dest: /home/docker/privatebin.yaml
+    owner: root
+    group: root
+    mode: 0400
+  notify: 
+    - start privatebin docker

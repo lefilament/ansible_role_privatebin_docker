@@ -1,0 +1,10 @@
+---
+
+- name: start privatebin docker
+  docker_service:
+    project_src: /home/docker/
+    files: privatebin.yaml
+    project_name: privatebin
+  async: 120
+  poll: 10
+  when: not ansible_check_mode

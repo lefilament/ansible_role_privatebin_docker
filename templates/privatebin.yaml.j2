@@ -1,0 +1,34 @@
+version: '2.1'
+  
+services:
+  privatebin:
+    image: privatebin/nginx-fpm-alpine 
+    container_name: privatebin
+    read_only: true
+    restart: unless-stopped
+    volumes:
+      - data:/srv/data:z
+      - run:/run:z
+      - nginx_tmp:/var/lib/nginx/tmp:z
+      - tmp:/tmp:z
+    networks:
+      inverseproxy_shared:
+    labels:
+      traefik.docker.network: "inverseproxy_shared"
+      traefik.enable: "true"
+      traefik.frontend.headers.STSSeconds: "15552000"
+      traefik.frontend.headers.STSIncludeSubdomains: "true"
+      traefik.frontend.headers.STSPreload: "true"
+      traefik.frontend.passHostHeader: "true"
+      traefik.port: "80"
+      traefik.own.frontend.rule: "Host:{{ privatebin_url }}"
+
+networks:
+    inverseproxy_shared:
+        external: true
+
+volumes:
+    data:
+    run:
+    nginx_tmp:
+    tmp:
