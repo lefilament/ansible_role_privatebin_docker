@@ -16,12 +16,17 @@ services:
     labels:
       traefik.docker.network: "inverseproxy_shared"
       traefik.enable: "true"
-      traefik.frontend.headers.STSSeconds: "15552000"
-      traefik.frontend.headers.STSIncludeSubdomains: "true"
-      traefik.frontend.headers.STSPreload: "true"
-      traefik.frontend.passHostHeader: "true"
-      traefik.port: "80"
-      traefik.own.frontend.rule: "Host:{{ privatebin_url }}"
+      traefik.http.routers.privatebin-unsec.entrypoints: "http"
+      traefik.http.routers.privatebin-unsec.middlewares: "https-redirect@file"
+      traefik.http.routers.privatebin-unsec.rule: "Host(`{{ privatebin_url }}`)"
+      traefik.http.routers.privatebin.entrypoints: "https"
+      traefik.http.routers.privatebin.middlewares: "security-headers@file"
+      traefik.http.routers.privatebin.rule: "Host(`{{ privatebin_url }}`)"
+      traefik.http.routers.privatebin.service: "privatebin"
+      traefik.http.routers.privatebin.tls: "true"
+      traefik.http.routers.privatebin.tls.certresolver: "le"
+      traefik.http.routers.privatebin.tls.options: "default@file"
+      traefik.http.services.privatebin.loadbalancer.server.port: "80"
 
 networks:
     inverseproxy_shared:
