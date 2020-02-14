@@ -10,3 +10,30 @@
     mode: 0400
   notify: 
     - start privatebin docker
+
+## Backup Privatebin section
+- name: Install privatebin backup compose file
+  template:
+    src: backup.yaml.j2
+    dest: /home/docker/backups/backup-privatebin.yaml
+    owner: root
+    group: root
+    mode: 0400
+  when: inventory_hostname in groups['maintenance_contract']
+
+- name: Copy docker file for mysql duplicity
+  copy:
+    src: ../docker_odoo/files/Dockerfile-backup
+    dest: /home/docker/backups/Dockerfile-postgres
+    owner: root
+    group: root
+    mode: 0644
+  when: inventory_hostname in groups['maintenance_contract']
+
+- name: add cron job to run backup every day
+  cron:
+    name: backup privatebin
+    minute: 33
+    hour: 4
+    job: /usr/local/bin/docker-compose -f /home/docker/backups/backup-privatebin.yaml run --rm backup_privatebin 
+  when: inventory_hostname in groups['maintenance_contract']
