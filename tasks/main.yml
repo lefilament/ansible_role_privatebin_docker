@@ -21,7 +21,7 @@
     mode: 0400
   when: inventory_hostname in groups['maintenance_contract']
 
-- name: Copy docker file for mysql duplicity
+- name: Copy docker file for postgres duplicity
   copy:
     src: ../docker_odoo/files/Dockerfile-backup
     dest: /home/docker/backups/Dockerfile-postgres
