@@ -1,7 +1,7 @@
 ---
 
 - name: start privatebin docker
-  docker_service:
+  docker_compose:
     project_src: /home/docker/
     files: privatebin.yaml
     project_name: privatebin
