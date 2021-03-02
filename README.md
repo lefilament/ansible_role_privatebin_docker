@@ -22,7 +22,7 @@ ansible_port:
 
 
 ## Privatebin configuration
-# Privatebin URL
+# Privatebin URL (only sub.domain without https:// in front)
 privatebin_url:
 
 ## Backup Swift Storage configuration
