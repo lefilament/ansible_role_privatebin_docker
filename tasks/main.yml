@@ -8,7 +8,7 @@
     owner: root
     group: root
     mode: '0400'
-  notify: 
+  notify:
     - start privatebin docker
 
 ## Backup Privatebin section
@@ -21,10 +21,28 @@
     mode: '0400'
   when: inventory_hostname in groups['maintenance_contract']
 
+- name: Install privatebin backup2 compose file
+  template:
+    src: backup2.yaml.j2
+    dest: /home/docker/backups/backup2-privatebin.yaml
+    owner: root
+    group: root
+    mode: '0400'
+  when: inventory_hostname in groups['maintenance_contract']
+
+
 - name: add cron job to run backup every day
   cron:
     name: backup privatebin
     minute: "33"
     hour: "4"
-    job: /usr/local/bin/docker-compose -f /home/docker/backups/backup-privatebin.yaml run --rm backup_privatebin 
+    job: /usr/local/bin/docker-compose -f /home/docker/backups/backup-privatebin.yaml run --rm backup_privatebin
+  when: inventory_hostname in groups['maintenance_contract']
+
+- name: add cron job to run backup2 every day
+  cron:
+    name: backup2 privatebin
+    minute: "33"
+    hour: "7"
+    job: /usr/local/bin/docker-compose -f /home/docker/backups/backup2-privatebin.yaml run --rm backup_privatebin
   when: inventory_hostname in groups['maintenance_contract']
