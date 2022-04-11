@@ -2,7 +2,7 @@ version: "2.1"
 services:
     backup_privatebin:
         image: tecnativa/duplicity:postgres
-        hostname: backup-privatebin
+        hostname: {{ inventory_hostname_short | lower | regex_replace('_','') }}-privatebin
         environment:
             DST: "swift://privatebin_{{ inventory_hostname|lower }}"
             PGDATABASE: "none"
@@ -20,11 +20,14 @@ services:
             JOB_300_WHAT: "backup --full-if-older-than 6D"
             JOB_302_WHAT: "dup remove-all-but-n-full 5 --force $$DST $$@"
             JOB_302_WHEN: "daily"
+            OPTIONS: "--allow-source-mismatch"
         volumes:
+            - privatebin_backup_cache:/root/.cache/duplicity/
             - privatebin_data:/mnt/backup/src/privatebin:z
         command:
             - /etc/periodic/daily/jobrunner
 
 volumes:
+    privatebin_backup_cache:
     privatebin_data:
         external: true
