@@ -2,47 +2,46 @@
 
 ## Install privatebin docker
 - name: Install privatebin docker
-  template:
-    src: privatebin.yaml.j2
-    dest: /home/docker/privatebin.yaml
-    owner: root
-    group: root
-    mode: '0400'
+  ansible.builtin.template:
+      src: privatebin.yaml.j2
+      dest: /home/docker/privatebin.yaml
+      owner: root
+      group: root
+      mode: '0400'
   notify:
-    - start privatebin docker
+      - Start privatebin docker
 
 ## Backup Privatebin section
 - name: Install privatebin backup compose file
-  template:
-    src: backup.yaml.j2
-    dest: /home/docker/backups/backup-privatebin.yaml
-    owner: root
-    group: root
-    mode: '0400'
+  ansible.builtin.template:
+      src: backup.yaml.j2
+      dest: /home/docker/backups/backup-privatebin.yaml
+      owner: root
+      group: root
+      mode: '0400'
   when: inventory_hostname in groups['maintenance_contract']
 
 - name: Install privatebin backup2 compose file
-  template:
-    src: backup2.yaml.j2
-    dest: /home/docker/backups/backup2-privatebin.yaml
-    owner: root
-    group: root
-    mode: '0400'
+  ansible.builtin.template:
+      src: backup2.yaml.j2
+      dest: /home/docker/backups/backup2-privatebin.yaml
+      owner: root
+      group: root
+      mode: '0400'
   when: inventory_hostname in groups['maintenance_contract']
 
-
-- name: add cron job to run backup every day
-  cron:
-    name: backup privatebin
-    minute: "33"
-    hour: "4"
-    job: /usr/local/bin/docker-compose -f /home/docker/backups/backup-privatebin.yaml run --rm backup_privatebin
+- name: Add cron job to run backup every day
+  ansible.builtin.cron:
+      name: backup privatebin
+      minute: "25"
+      hour: "04"
+      job: /usr/bin/docker-compose -f /home/docker/backups/backup-privatebin.yaml run --rm backup_privatebin
   when: inventory_hostname in groups['maintenance_contract']
 
-- name: add cron job to run backup2 every day
-  cron:
-    name: backup2 privatebin
-    minute: "33"
-    hour: "7"
-    job: /usr/local/bin/docker-compose -f /home/docker/backups/backup2-privatebin.yaml run --rm backup_privatebin
+- name: Add cron job to run backup2 every day
+  ansible.builtin.cron:
+      name: backup2 privatebin
+      minute: "35"
+      hour: "01"
+      job: /usr/bin/docker-compose -f /home/docker/backups/backup2-privatebin.yaml run --rm backup_privatebin
   when: inventory_hostname in groups['maintenance_contract']
